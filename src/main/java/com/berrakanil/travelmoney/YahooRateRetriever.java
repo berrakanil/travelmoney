@@ -24,7 +24,6 @@ public class YahooRateRetriever implements IRateRetriever {
 		JSONObject json = new JSONObject(line);
 		JSONObject main = json.getJSONObject("query").getJSONObject("results").getJSONObject("rate");
 		String rate = main.getString("Rate");
-
 		return Float.parseFloat(rate);
 	}
 
@@ -35,19 +34,16 @@ public class YahooRateRetriever implements IRateRetriever {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(response, CHARSET));
 		String line = reader.readLine();
 		assert(line != null);
-
 		return line;
 	}
 
 	public float getRate(String pair) throws Exception {
 		String url  = createUrlString(pair);
 		String line = retrieveResponse(url);
-
 		Float rate = parseResponse(line);
 		if (rate < DELTA) {
 			throw new NumberFormatException("getRate: invalid rate " + rate);
 		}
-		
 		return rate;
 	}
 }
