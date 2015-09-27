@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RequestHandler {
 	
 	private final float DELTA = 0.0001f;
-	IRateRetriever m_retriever;
+	private IRateRetriever m_retriever;
 	
 	public RequestHandler() { 
 		m_retriever = new YahooRateRetriever();
