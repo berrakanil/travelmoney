@@ -27,6 +27,25 @@ public class YahooRateRetrieverTest {
             +    "}"
             + "}";
     
+    private final String responseTemplateWithNewLine = 
+            "{\"query\":"
+            +   "{\"count\":1,"
+            +    "\"created\":\"2015-09-03T21:51:02Z\","
+            +    "\"lang\":\"en-US\","
+            +    "\"results\":"
+            +        "{\"rate\":"
+            +          "{\"id\":\"%s\","
+            +           "\"Name\":\"%s\",\n"
+            +           "\"Rate\":\"%s\","
+            +           "\"Date\":\"9/3/2015\","
+            +           "\"Time\":\"10:50pm\","
+            +           "\"Ask\":\"133.5400\","
+            +           "\"Bid\":\"133.5000\""
+            +           "}"
+            +        "}"
+            +    "}"
+            + "}";
+    
     private final float DELTA = 0.0001f;
 
     @Before
@@ -40,6 +59,13 @@ public class YahooRateRetrieverTest {
     @Test
     public void testParseResponse_validLine() {
         String line = String.format(responseTemplate, "USDGBP","USD/GBP","0.5");
+        YahooRateRetriever retriever = new YahooRateRetriever();
+        assertEquals(0.5, retriever.parseResponse(line), DELTA);    
+    }
+    
+    @Test
+    public void testParseResponse_validLinewithNewLineCharacter() {
+        String line = String.format(responseTemplateWithNewLine, "USDGBP","USD/GBP","0.5");
         YahooRateRetriever retriever = new YahooRateRetriever();
         assertEquals(0.5, retriever.parseResponse(line), DELTA);    
     }
