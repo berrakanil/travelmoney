@@ -24,26 +24,40 @@ public class YahooRateRetriever implements IRateRetriever {
         JSONObject json = new JSONObject(line);
         JSONObject main = json.getJSONObject("query").getJSONObject("results").getJSONObject("rate");
         String rate = main.getString("Rate");
+
         return Float.parseFloat(rate);
     }
 
     protected String retrieveResponse(String url) throws Exception {
-        URLConnection connection = new URL(url).openConnection();
-        connection.setRequestProperty("Accept-Charset", CHARSET);
-        InputStream response = connection.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(response, CHARSET));
-        String line = reader.readLine();
-        assert(line != null);
-        return line;
+        StringBuilder jsonLine = new StringBuilder();
+        try {
+            URLConnection connection = new URL(url).openConnection();
+            connection.setRequestProperty("Accept-Charset", CHARSET);
+            InputStream response = connection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(response, CHARSET));
+            try {
+                String line;
+                while((line = reader.readLine()) != null) {
+                    jsonLine.append(line).append("\n");
+                }
+            } finally {
+                reader.close();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to read from json stream", e);
+        }
+        return jsonLine.toString();
     }
 
     public float getRate(String pair) throws Exception {
         String url  = createUrlString(pair);
         String line = retrieveResponse(url);
+
         Float rate = parseResponse(line);
         if (rate < DELTA) {
             throw new NumberFormatException("getRate: invalid rate " + rate);
         }
+        
         return rate;
     }
 }
